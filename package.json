@@ -4,15 +4,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "start": "webpack serve --open"
+    "build": "NODE_ENV=production webpack",
+    "start": "NODE_ENV=development webpack serve --open"
   },
+  "sideEffects": false,
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16",
     "html-webpack-plugin": "^5.6.3",
+    "react-refresh": "^0.17.0",
     "webpack": "^5.99.5",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",
@@ -22,6 +27,7 @@
     "@mia789456/child": "^3.0.0",
     "@mia789456/parent1": "^1.0.0",
     "@mia789456/parent2": "^1.0.0",
+    "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
