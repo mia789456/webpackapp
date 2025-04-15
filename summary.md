@@ -40,3 +40,27 @@ module.exports = {
     }
 }
 ```
+
+### Tree Shaking
+1. webpack.config.js配置如下：
+```
+mode: 'development',
+optimization: {
+    // true的话会开启TerserPlugin，删除被标记为未使用的导出，也就是标有unused harmony export
+    minimize: false,
+    // 启用后会在打包结果中标记未使用的导出 
+    /* unused harmony export square */ 
+    usedExports: true,
+},
+```
+2. 入口index.js文件
+```
+import { cube } from './math.js';
+import { add } from '@mia789456/child' 
+console.log('start index.js')
+cube(5)
+```
+math.js文件有cube和square两个方法，这里只导入了cube，square被标记了/* unused harmony export square */
+@mia789456/child暴露了add和subtract方法，两个方法都被标记/* unused harmony exports add, subtract */
+
+如果设置 @mia789456/child的package.json的sideEffects为false，其他都保持不变之后重新打包，会发现打包出来的结果中根本就没有引入@mia789456/child的任何代码，所以如果开发一个库的话，如果没有副作用，一定记得设置sideEffects为false，这样可以减少webpack打包的体积。

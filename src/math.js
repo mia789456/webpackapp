@@ -4,6 +4,6 @@ export function square(x) {
 }
 
 export function cube(x) {
-
+  console.log('cubing...'); // just for dem
   return x * x * x;
 }

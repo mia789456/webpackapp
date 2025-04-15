@@ -1,8 +1,9 @@
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { size } = require("lodash");
+const webpack = require('webpack');
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -61,6 +62,13 @@ module.exports = (env) => {
       }),
       isDevelopment && new ReactRefreshWebpackPlugin(),
       // new BundleAnalyzerPlugin()
+      new webpack.DllReferencePlugin({
+        manifest: require('./dll/lodash-manifest.json')
+      }),
+      new AddAssetHtmlPlugin({
+        filepath: path.resolve(__dirname, 'dll/lodash.dll.js'),
+        publicPath: '/'
+      }),
     ].filter(Boolean),
     module: {
       rules: [
@@ -88,7 +96,7 @@ module.exports = (env) => {
               presets: [
                 '@babel/preset-env',
                 ['@babel/preset-react', {
-                  runtime: 'automatic',
+                  runtime: 'automatic', // 会引入react jsx runtime
                 }] // 新增 React 预设
               ],
               plugins: [isDevelopment && require.resolve('react-refresh/babel')].filter(Boolean),
@@ -98,16 +106,21 @@ module.exports = (env) => {
       ],
     },
     externals: {
-      lodash: {
-        commonjs: 'lodash',
-        commonjs2: 'lodash',
-        amd: 'lodash',
-        root: '_',
-      },
+      // lodash: {
+      //   commonjs: 'lodash',
+      //   commonjs2: 'lodash',
+      //   amd: 'lodash',
+      //   root: '_',
+      // },
       jquery: 'jquery',
     },
 
     optimization: {
+      // 只有mode production时才会是true，其他情况都是false，另外
+      // 我发现，mode为production，设置usedExports: true时未被使用的代码不会被标记
+      // 为unused harmony export，但是设置minimize为true会删掉他们，没有啥问题
+      // 如果设置concatenateModules为false，那么未使用代码就出现unused harmony export了
+      // webpack针对这个属性的解释几乎没有，先死记硬背吧。。
       concatenateModules: false,
       minimize: false,
       // 启用后会在打包结果中标记未使用的导出 

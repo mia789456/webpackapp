@@ -1,7 +1,13 @@
-// import React from 'react';
-
+import { useState } from 'react'
 function App() {
-  return <h1>Hello React 19!~</h1>;
+  const [count, setCount] = useState(0);
+  const onBtnClick = () => {
+    setCount(count + 1)
+  }
+  return <div>
+    <h1>Hello React 19!DDDDDD</h1>
+    <button onClick={onBtnClick}>{count}</button>
+  </div>
 }
 
 export default App;
