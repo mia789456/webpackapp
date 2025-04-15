@@ -4,10 +4,9 @@
   "main": "index.js",
   "scripts": {
     "build:dll": "webpack --config webpack.dll.config.js",
-    "build": "NODE_ENV=production npm run build:dll && webpack",
+    "build": "NODE_ENV=production webpack",
     "start": "NODE_ENV=development webpack serve --open"
   },
-  "sideEffects": false,
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,12 +14,14 @@
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.27.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16",
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "add-asset-html-webpack-plugin": "^6.0.0",
     "html-webpack-plugin": "^5.6.3",
+    "mini-css-extract-plugin": "^2.9.2",
     "react-refresh": "^0.17.0",
     "typescript": "^5.8.3",
     "webpack": "^5.99.5",

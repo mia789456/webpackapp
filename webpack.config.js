@@ -4,8 +4,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+console.log('isDevelopment', isDevelopment);
 
 module.exports = (env) => {
   console.log('env', env);
@@ -15,7 +17,7 @@ module.exports = (env) => {
     devtool: 'source-map',
     // entry: "./src/index.js",
     entry: {
-      index: './src/index.js',
+      index: './src/index.tsx',
       // another: './src/another-module.js',
       // index: {
       //   import: './src/index.js',
@@ -55,20 +57,26 @@ module.exports = (env) => {
       //   type: 'umd',
       // },
     },
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'] // 添加 TS 扩展名
+    },
     plugins: [
       new HtmlWebpackPlugin({
         title: 'Caching',
         template: './index.html',
       }),
       isDevelopment && new ReactRefreshWebpackPlugin(),
+      !isDevelopment && new MiniCssExtractPlugin({
+        filename: '[name].[contenthash].css'
+      }),
       // new BundleAnalyzerPlugin()
-      new webpack.DllReferencePlugin({
-        manifest: require('./dll/lodash-manifest.json')
-      }),
-      new AddAssetHtmlPlugin({
-        filepath: path.resolve(__dirname, 'dll/lodash.dll.js'),
-        publicPath: '/'
-      }),
+      // new webpack.DllReferencePlugin({
+      //   manifest: require('./dll/lodash-manifest.json')
+      // }),
+      // new AddAssetHtmlPlugin({
+      //   filepath: path.resolve(__dirname, 'dll/lodash.dll.js'),
+      //   publicPath: '/'
+      // }),
     ].filter(Boolean),
     module: {
       rules: [
@@ -81,14 +89,15 @@ module.exports = (env) => {
           behind the scenes to 
           patch <style> tags when CSS dependencies are updated.
           */
-          use: ['style-loader', 'css-loader'],
+          use: [isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+            'css-loader']
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
           type: 'asset/resource',
         },
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(js|jsx|tsx|ts)$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
@@ -97,7 +106,8 @@ module.exports = (env) => {
                 '@babel/preset-env',
                 ['@babel/preset-react', {
                   runtime: 'automatic', // 会引入react jsx runtime
-                }] // 新增 React 预设
+                }], // 新增 React 预设
+                '@babel/preset-typescript'
               ],
               plugins: [isDevelopment && require.resolve('react-refresh/babel')].filter(Boolean),
             }
